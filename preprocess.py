@@ -5,9 +5,7 @@ import pandas as pd
 import file_location
 
 
-
 def add_topic_and_class_column(directory):
-
     for f in os.listdir(os.fsencode(directory)):
         if f.endswith(b'.csv'):
             file_name = f.decode('utf-8')
@@ -91,4 +89,19 @@ def clean_data(directory):
 
             df_cleaned = pd.DataFrame(cleaned)
             df_cleaned.to_csv(directory + '/' + file_name, index=False)
+
+
+def remove_nan_and_short_rows(directory):
+    for f in os.listdir(os.fsencode(directory)):
+        if f.endswith(b'.csv'):
+            file_name = f.decode('utf-8')
+            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
+            print('before {}'.format(df.shape))
+            for index, data in df.iterrows():
+                if type(data['content']) is not str or len(data['content']) <= 5:
+                    df.drop(index, inplace=True)
+            print('after {}'.format(df.shape))
+            df.to_csv(directory + '/' + file_name, index=False)
+
+
 
