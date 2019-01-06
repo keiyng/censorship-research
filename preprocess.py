@@ -104,4 +104,10 @@ def remove_nan_and_short_rows(directory):
             df.to_csv(directory + '/' + file_name, index=False)
 
 
+def sort_by_content(directory):
+    for f in os.listdir(os.fsencode(directory)):
+        if f.endswith(b'.csv'):
+            file_name = f.decode('utf-8')
+            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
+            df.sort_values(by=['content']).to_csv(directory + '/' + file_name, index=False)
 
