@@ -48,8 +48,6 @@ def merge_csvs(directory):
     print(uncensored_merged_df.shape)
 
 
-
-
 def remove_duplicates(directory):
     for f in os.listdir(os.fsencode(directory)):
         if f.endswith(b'.csv'):
@@ -64,5 +62,33 @@ def remove_duplicates(directory):
                 df_dropped.to_csv(directory + '/' + file_name, index=False)
 
 
+def clean_data(directory):
+    for f in os.listdir(os.fsencode(directory)):
+        if f.endswith(b'.csv'):
+            cleaned = []
+            file_name = f.decode('utf-8')
+            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
 
+            for index, data in df.iterrows():
+                data['content'] = re.sub(r'\n+', ' ', data['content']) ## newline
+                data['content'] = re.sub(r'\r', ' ', data['content']) ## linebreak
+                data['content'] = re.sub(r'收起全文d', '', data['content']) ## collapse
+                data['content'] = re.sub(r'(//)', '', data['content']) ## slashes
+                data['content'] = re.sub(r'(@.+?)[:：;]+', ' ', data['content']) ## tagged user reply
+                data['content'] = re.sub(r'(@.+?)\s+', ' ', data['content']) ## tagged user
+                data['content'] = re.sub(r'(@.+?)$', ' ', data['content']) ## end of text
+                data['content'] = re.sub(r'(转发微博)', '', data['content']) ## retweet
+                data['content'] = re.sub(r'(转：)', '', data['content']) ## reblog
+                data['content'] = re.sub(r'#', ' ', data['content']) ## hashtag
+                data['content'] = re.sub(r'(→_→)', '', data['content']) ## arrows
+                data['content'] = re.sub(r'(回复)', '', data['content']) ## reply
+                data['content'] = re.sub(r'(网页链接)', '', data['content']) ## link
+                data['content'] = re.sub(r'\[.+?\]', '', data['content']) ## emoticon text
+                data['content'] = re.sub(r'', ' ', data['content']) ## special symbol
+                data['content'] = data['content'].strip()
+                
+                cleaned.append(data)
+
+            df_cleaned = pd.DataFrame(cleaned)
+            df_cleaned.to_csv(directory + '/' + file_name, index=False)
 
