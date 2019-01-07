@@ -111,3 +111,48 @@ def sort_by_content(directory):
             df = pd.read_csv(directory + '/' + f.decode('utf-8'))
             df.sort_values(by=['content']).to_csv(directory + '/' + file_name, index=False)
 
+
+def remove_similar(directory):
+    for f in os.listdir(os.fsencode(directory)):
+        if f.endswith(b'.csv'):
+            file_name = f.decode('utf-8')
+            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
+
+            print(file_name + str(df.shape))
+
+            ## group data by their first character
+            groups = dict()
+            for index, data in df.iterrows():
+                if data['content'][0] in groups.keys():
+                    continue
+                else:
+                    current = index
+                    try:
+                        while data['content'][0] == df.iloc[current+1]['content'][0]:
+                            if data['content'][0] not in groups.keys():
+                                groups[data['content'][0]] = [data]
+                            groups[data['content'][0]].append(df.iloc[current+1])
+                            current += 1
+                    except:
+                        print('end')
+            
+            print('no. of groups created: {}'.format(len(groups)))
+
+            ## remove similar posts
+            similar = []
+            for key, value in groups.items():
+                if len(value) > 1:
+                    for i in range(len(value) - 1):
+                        if len(value[i]['content']) > 15:
+                            cutoff = int(len(value[i]['content']) / 2)
+                            if value[i]['content'][:cutoff] in value[i+1]['content'][:cutoff]:
+                                # print(value[i+1]['content'])
+                                similar.append(value[i+1]['mid'])
+            print('similar posts found: {}'.format(len(similar)))
+
+            for index, data in df.iterrows():
+                if data['mid'] in similar:
+                    df.drop(index, inplace=True)
+            print(df.shape)
+
+            df.to_csv(directory + '/' + file_name, index=False)
