@@ -256,9 +256,9 @@ def convert_punctuations(directory):
                 data['content'] = data['content'].lstrip()
                 data['content'] = data['content'].rstrip()
 
-                converted.append(data['content'])
+                converted.append(data)
 
             print(pd.DataFrame(converted).shape)
-            pd.DataFrame(converted).to_csv(directory + '/punc_' + file_name, index=False, header=False)
+            pd.DataFrame(converted).to_csv(directory + '/punc_' + file_name, index=False)
 
 
