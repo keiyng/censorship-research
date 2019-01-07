@@ -261,4 +261,19 @@ def convert_punctuations(directory):
             print(pd.DataFrame(converted).shape)
             pd.DataFrame(converted).to_csv(directory + '/punc_' + file_name, index=False)
 
+def rename_and_drop_columns(directory):
+    for f in os.listdir(os.fsencode(directory)):
+        if f.endswith(b'.csv'):
+            file_name = f.decode('utf-8')
+            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
+
+            if 'uncensored' in file_name:
+                df.rename(columns={'A': 'idx', 'B': 'content', 'L': 'followers', 'N': 'topic', 'O': 'class'}, inplace=True)
+                df.drop(columns=['C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M'], inplace=True)
+            else:
+                df.rename(columns={'Source (A)': 'idx', 'Source (B)': 'content', 'Source (L)': 'followers', 'Source (N)': 'topic', 'Source (O)': 'class'}, inplace=True)
+                df.drop(columns=['Source (C)', 'Source (D)', 'Source (E)', 'Source (F)', 'Source (G)', 'Source (H)', 'Source (I)', 'Source (J)', 'Source (K)', 'Source (M)'], inplace=True)
+
+            df.to_csv(directory + '/' + file_name, index=False)
+
 
