@@ -175,6 +175,7 @@ def segment(directory):
             for index, data in df.iterrows():
                 data['content'] = jieba.cut(data['content'], cut_all=False, HMM=True)
                 data['content'] = ' '.join(data['content'])
+                data['content'] = re.sub(r'\s+', ' ', data['content'])
                 segmented_data.append(data)
 
             print(pd.DataFrame(segmented_data).shape)
