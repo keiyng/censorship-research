@@ -156,3 +156,27 @@ def remove_similar(directory):
             print(df.shape)
 
             df.to_csv(directory + '/' + file_name, index=False)
+
+
+def segment(directory):
+    for f in os.listdir(os.fsencode(directory)):
+        if f.endswith(b'.csv'):
+            file_name = f.decode('utf-8')
+            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
+            print(df.shape)
+
+            word_list = ['雾霾', '维稳', '维权', '洗脑', '天安门', '六四', '民运', '爱国', '爱党', '奥巴马', '欧巴马', '共产党', '薄熙来', '三聚氰胺', '地沟油', '毒奶粉', '被河蟹', '五毛党', '五毛', '谷歌', '河蟹', '被和谐', '翻墙', '计划生育', '一孩政策', '文革', '文化大革命', '红黄蓝', '三色幼儿园', '川普', '特朗普', '推特', '茉莉花革命', '新闻自由', '言论自由', '宗教自由', '信仰自由', '台独', '藏独', '港独', '疆独', '新疆', '达赖喇嘛', '艾未未', '刘晓波', '晓波', '知识产权', '山寨', '三峡', '贫富悬殊', '贫富', '外资', '南海争议', '钓鱼岛', '钓鱼台', '政改', '女权', '温家宝', '胡锦涛']
+
+            for word in word_list:
+                jieba.add_word(word)
+                jieba.suggest_freq(word, True)
+
+            segmented_data = []
+            for index, data in df.iterrows():
+                data['content'] = jieba.cut(data['content'], cut_all=False, HMM=True)
+                data['content'] = ' '.join(data['content'])
+                segmented_data.append(data)
+
+            print(pd.DataFrame(segmented_data).shape)
+
+            pd.DataFrame(segmented_data).to_csv(directory + '/' + file_name, index=False)
