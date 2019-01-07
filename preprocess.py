@@ -2,6 +2,7 @@ import os
 import re
 import jieba
 import pandas as pd
+import numpy as np
 import file_location
 
 
@@ -277,3 +278,9 @@ def rename_and_drop_columns(directory):
             df.to_csv(directory + '/' + file_name, index=False)
 
 
+def extract_content_to_txt(directory):
+    for f in os.listdir(os.fsencode(directory)):
+        if f.endswith(b'.csv'):
+            file_name = f.decode('utf-8')
+            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
+            np.savetxt(directory + '/' + file_name.replace('csv', 'txt'), df['content'], fmt='%s' , newline='\n')
