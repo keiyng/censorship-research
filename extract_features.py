@@ -58,12 +58,38 @@ def extract_wc_over_semantic_classes(directory):
                 print(e)
             finally:
                 df['wc_over_semantic_classes'].replace(np.inf, 0, inplace=True)
+                df['wc_over_semantic_classes'].replace(np.nan, 0, inplace=True)
+                
 
             print(df['WC'].head())
             print(df['semantic_classes'].head())
             print(df['wc_over_semantic_classes'].head())
+            
+            print(df.shape)            
 
-            print(df.isnull().values.any())
+            df.to_csv(directory + '/' + file_name, index=False)
+
+
+def extract_readability(directory):
+    for f in os.listdir(os.fsencode(directory)):
+        if f.endswith(b'.csv'):
+            file_name = f.decode('utf-8')
+            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
+            print(df.shape)
+
+            try:
+                df['readability'] = (df['charFreq'].values + df['wordFreq'].values + df['wc_over_semantic_classes'].values) / 3
+            except Exception as e:
+                print(e)
+            finally:
+                df['readability'].replace(np.inf, 0, inplace=True)
+                df['readability'].replace(np.nan, 0, inplace=True)
+
+            print(df['charFreq'].head())
+            print(df['wordFreq'].head())
+            print(df['wc_over_semantic_classes'].head())
+            print(df['readability'].head())
+
             print(df.shape)
 
             df.to_csv(directory + '/' + file_name, index=False)
