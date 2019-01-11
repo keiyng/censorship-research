@@ -28,3 +28,13 @@ def compute_zscores(directory):
             print(df_features.shape)
             print(df_features.columns.values)
 
+
+# df_cen = pd.read_csv(file_location.features + '/scrapped_all_censored.csv')
+# df_uncen = pd.read_csv(file_location.features + '/scrapped_all_uncensored.csv')
+# print(df_cen.describe())
+# print(df_cen.mean())
+# print(df_cen.sample())
+# print(df_cen.corr())
+# print(df_cen.shape)
+# print(df_cen.columns.values)
+# print(df_cen.tail())
