@@ -22,7 +22,7 @@ def load_data():
                 words_list.append(word)
         final_data_list.append(words_list)
         
-    return data_list
+    return final_data_list
 
 def get_vectors_average():
     vector = []
@@ -30,8 +30,7 @@ def get_vectors_average():
 
     oov_counter = 0
     word_counter = 0
-
-    for item in data_list:
+    for item in final_data_list:
         for word in item:
             try:
                 vector.append(model.wv[word])
@@ -40,9 +39,12 @@ def get_vectors_average():
                 # keeps count of OOV
                 oov_counter += 1
                 continue
-        vectors_average.append(np.mean(vector, axis=0))
+        if len(vector) == 0:
+            vectors_average.append(np.zeros(200))
+        else:
+            vectors_average.append(np.mean(vector, axis=0))
         vector = []
-        
+    
     print('oov_counter:', oov_counter)
     print('word_counter:', word_counter)
     total = oov_counter + word_counter
@@ -51,20 +53,18 @@ def get_vectors_average():
     print('oov %:', percent)
 
     df = pd.DataFrame(vectors_average, columns=list(range(1, 201)))
-    print(df.head())
-   
-    df.to_csv(directory + '/' + 'w2v2_' + file_name, index=False)
+    df.to_csv(directory + '/w2v_' + file_name, index=False)
 
     return vectors_average
 
 if __name__ == '__main__':
-    directory = file_location.features
+    directory = file_location.jed_features
     model = load_word2vec_model()
 
     for f in os.listdir(os.fsencode(directory)):
         if f.endswith(b'.csv'):
             file_name = f.decode('utf-8')
-            df = pd.read_csv(directory + '/' + f.decode('utf-8'))
+            df = pd.read_csv(directory + '/' + file_name)
             print(df.shape)
-            data_list = load_data()
+            final_data_list = load_data()
             get_vectors_average()
